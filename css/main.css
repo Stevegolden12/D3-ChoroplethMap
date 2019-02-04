@@ -1,0 +1,9 @@
+#title,
+#description {
+  text-align: center;
+}
+
+#svgWrapper {
+  display: flex;
+  justify-content: center;
+}
