@@ -7,3 +7,12 @@
   display: flex;
   justify-content: center;
 }
+
+.land {
+  fill: white;
+}
+
+.state-boundary {
+  fill: none;
+  stroke: black;
+}
