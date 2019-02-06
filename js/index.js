@@ -9,11 +9,13 @@ var svg = d3.select("svg")
 const x = d3.scaleLinear()
   .domain([2.6, 75.1])
   .rangeRound([600, 860]);
+
 //Color scale
 const color = d3.scaleThreshold()
   .domain(d3.range(2.6, 75.1, (75.1 - 2.6) / 8))
   .range(d3.schemeGreens[9]);
 
+// Legend
 const g = svg.append("g")
   .attr("class", "key")
   .attr("id", "legend")
@@ -68,11 +70,39 @@ function ready(error, us, education) {
     .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
     .attr("class", "county")
-    .attr("fill", "white")
-    .attr("stroke", "black")
+    .attr("fill", function (d, i) {
+      const arr1 = education.filter((i) => i.fips === d.id);  
+      const BOH = arr1[0].bachelorsOrHigher;
+      if (BOH < 3) {
+        return "white"
+      } else if (BOH >= 3 && BOH < 12) {
+        return "rgb(229, 245, 224)";
+      } else if (BOH >= 12 && BOH < 21) {
+        return "rgb(199, 233, 192)";
+      } else if (BOH >= 21 && BOH < 30) {
+        return "rgb(161, 217, 155)";
+      } else if (BOH >= 30 && BOH < 39) {
+        return "rgb(116, 196, 118)";
+      } else if (BOH >= 39 && BOH < 48) {
+        return "rgb(65, 171, 93)";
+      } else if (BOH >= 48 && BOH < 57) {
+        return "rgb(35, 139, 69)";
+      } else if (BOH >= 57 && BOH < 66) {
+        return "rgb(0, 109, 44)";
+      } else if (BOH >= 66) {
+        return "rgb(0, 68, 27)";
+      } else {
+        return "white";
+      }
+
+    })
+    .attr("stroke", "white")
     .attr("d", d3.geoPath())
     .append("svg:title")
-    .text((d, i) => education[i].area_name + ": " + education[i].state + ", " + education[i].bachelorsOrHigher + "%")
+    .text((d, i) => {
+      const arr = education.filter((i) => i.fips === d.id);     
+      return arr[0].area_name + ": " + arr[0].state + ", " + arr[0].bachelorsOrHigher + "%"
+    })
     .attr("data-fips",(d,i)=>education[i].fips)
     .attr("data-education", (d, i) => {
       if (education[i].bachelorsOrHigher !== "") {
@@ -81,6 +111,7 @@ function ready(error, us, education) {
         return "no data";
       }
     })
+  
   
   svg.append("path")
     .datum(topojson.mesh(us, us.objects.states, function (a, b) { return a !== b; }))
