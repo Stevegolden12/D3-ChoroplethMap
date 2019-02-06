@@ -103,12 +103,18 @@ function ready(error, us, education) {
       const arr = education.filter((i) => i.fips === d.id);     
       return arr[0].area_name + ": " + arr[0].state + ", " + arr[0].bachelorsOrHigher + "%"
     })
-    .attr("data-fips",(d,i)=>education[i].fips)
+    .attr("data-fips", (d, i) => {
+      if (education[i].fips !== null) {
+        return education[i].fips;
+      } else {
+        return null;
+      }
+    })
     .attr("data-education", (d, i) => {
-      if (education[i].bachelorsOrHigher !== "") {
+      if (education[i].bachelorsOrHigher !== null) {
         return education[i].bachelorsOrHigher;
       } else {
-        return "no data";
+        return null;
       }
     })
   
