@@ -5,13 +5,6 @@ var svg = d3.select("svg")
   .attr("width", width)
   .attr("height", height);
 
-// Define the div for the tooltip
-var tooltip = d3.select("body").append("div")
-  .attr("class", "tooltip")
-  .attr("id", "tooltip")
-  .style("opacity", 0);
-
-
 // Queue up datasets using d3 Queue
 d3.queue()
   .defer(d3.json, "https://raw.githubusercontent.com/no-stack-dub-sack/testable-projects-fcc/master/src/data/choropleth_map/counties.json") //LOad US Counties
@@ -29,20 +22,6 @@ function ready(error, us, education) {
     .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
     .attr("class", "county")
-    .attr("data-fips", function (d) {
-      return d.id
-    })
-    .attr("data-education", function (d) {
-      var result = education.filter(function (obj) {
-        return obj.fips == d.id;
-      });
-      if (result[0]) {
-        return result[0].bachelorsOrHigher
-      }
-      //could not find a matching fips id in the data
-      console.log('could find data for: ', d.id);
-      return 0
-    })
     .attr("fill", "white")
     .attr("stroke", "black")
     .attr("d", d3.geoPath())   
