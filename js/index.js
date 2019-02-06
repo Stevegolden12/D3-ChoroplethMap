@@ -15,6 +15,10 @@ d3.queue()
 function ready(error, us, education) {
   if (error) throw error;
 
+  console.log(us)
+  console.log(education)
+
+    
 
   svg.append("g")
     .attr("class", "counties")
@@ -24,9 +28,18 @@ function ready(error, us, education) {
     .attr("class", "county")
     .attr("fill", "white")
     .attr("stroke", "black")
-    .attr("d", d3.geoPath())   
+    .attr("d", d3.geoPath())
+    .append("svg:title")
+    .text((d, i) => education[i].area_name + ": " + education[i].state + ", " + education[i].bachelorsOrHigher + "%")
+    .attr("data-fips",(d,i)=>education[i].fips)
+    .attr("data-education", (d, i) => {
+      if (education[i].bachelorsOrHigher !== "") {
+        return education[i].bachelorsOrHigher;
+      } else {
+        return "no data";
+      }
+    })
   
-
   svg.append("path")
     .datum(topojson.mesh(us, us.objects.states, function (a, b) { return a !== b; }))
     .attr("class", "states")
