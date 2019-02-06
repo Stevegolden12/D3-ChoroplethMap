@@ -1,17 +1,16 @@
+const width = 960;
+const height = 600;
 
-var width = 720,
-  height = 500;
-
-var projection = d3.geoAlbers()
-  .scale(1000)
-  .translate([width / 2, height / 2]);
-
-var path = d3.geoPath()
-  .projection(projection);
-
-var svg = d3.select("#svgWrapper").append("svg")
+var svg = d3.select("svg")
   .attr("width", width)
   .attr("height", height);
+
+// Define the div for the tooltip
+var tooltip = d3.select("body").append("div")
+  .attr("class", "tooltip")
+  .attr("id", "tooltip")
+  .style("opacity", 0);
+
 
 // Queue up datasets using d3 Queue
 d3.queue()
@@ -24,15 +23,34 @@ function ready(error, us, education) {
   if (error) throw error;
 
 
-  console.log(us);
-  
   svg.append("g")
     .attr("class", "counties")
     .selectAll("path")
     .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
-    .attr("d", path)
-    .style("fill", "white")
-    .style("stroke", "black");
+    .attr("class", "county")
+    .attr("data-fips", function (d) {
+      return d.id
+    })
+    .attr("data-education", function (d) {
+      var result = education.filter(function (obj) {
+        return obj.fips == d.id;
+      });
+      if (result[0]) {
+        return result[0].bachelorsOrHigher
+      }
+      //could not find a matching fips id in the data
+      console.log('could find data for: ', d.id);
+      return 0
+    })
+    .attr("fill", "white")
+    .attr("stroke", "black")
+    .attr("d", d3.geoPath())   
+  
+
+  svg.append("path")
+    .datum(topojson.mesh(us, us.objects.states, function (a, b) { return a !== b; }))
+    .attr("class", "states")
+    .attr("d", d3.geoPath());
 
 }
